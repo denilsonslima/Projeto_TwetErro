@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import e from 'express';
 
 const app = express();
 app.use(express.json());
@@ -11,23 +10,28 @@ const tweet = []
 
 app.post("/sign-up", (req, res) => {
     dadosUsuario.push(req.body)
-    res.send("Ok")
+    res.sendStatus(201)
 })
 
 app.post("/tweets", (req, res) => {
-    const dados = dadosUsuario.find(intem => intem.username === req.body.username)
+    const dados = dadosUsuario.find(intem => intem.username === req.headers.user)
+    const user = req.headers.user
     if (dados) {
-        let a = {...req.body, avatar: dadosUsuario[0].avatar}
+        let a = {...req.body, username: user, avatar: dadosUsuario[0].avatar}
         tweet.push(a)
-        res.send("Ok")
+        res.sendStatus(201)
         return
     }
-    res.send("UNAUTHORIZED")
+    res.status(401).send("UNAUTHORIZED")
 })
 
-app.get("/tweets", (_, res) => {
-    const dados = tweet.slice(-10)
-    res.send(dados)
+app.get("/tweets", (req, res) => {
+    const user = req.query.username
+    if(user){
+        const dados = tweet.filter(item => item.username === user) 
+        return res.send(dados)
+    }
+    res.send(tweet.slice(-10))
 })
 
 const PORT = 5000
