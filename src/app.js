@@ -10,7 +10,7 @@ const tweet = []
 
 app.post("/sign-up", (req, res) => {
     const { username, avatar } = req.body
-    if (!username || !avatar) {
+    if (!username || !avatar || typeof(username) !== "string" || typeof(avatar) !== "string") {
         return res.status(400).send("Todos os campos são obrigatórios!")
     }
     dadosUsuario.push(req.body)
@@ -21,7 +21,7 @@ app.post("/tweets", (req, res) => {
     const dados = dadosUsuario.find(intem => intem.username === req.headers.user)
     const user = req.headers.user
     const sms = req.body.tweet
-    if(!sms){
+    if(!sms || typeof(sms) !== "string"){
         return res.status(400).send("Todos os campos são obrigatórios!")
     }
     if (dados) {
